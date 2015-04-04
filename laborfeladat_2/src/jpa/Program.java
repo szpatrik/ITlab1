@@ -138,6 +138,9 @@ public class Program {
 	// Uj mozdony felvetele
 	public void ujMozdony(String sorszam, String tipusID, String futottkm)
 			throws Exception {
+		//Alakítsa át a megfelelõ típusokra a kapott String paramétereket.
+        	//Ellenõrizze a típus létezését
+    		//Hozza létre az új "Mozdony" entitást és rögzítse adatbázisban az "ujEntity" metódussal.
 		int futott;
 		int sorsz;
 		try {
@@ -219,17 +222,17 @@ public class Program {
 		    kesesInt = Integer.parseInt(keses);
 		    SimpleDateFormat SDF = new SimpleDateFormat("yyyy.MM.dd");
 		    ParsedDate = SDF.parse(datum);
+		} catch (ParseException e) {
+		    System.out.println("?Sikertelen Parszolás!");
+		    return;
 		} catch (NumberFormatException e) {
 		    System.out.println("?Hiba a típuskonvertálás során!");
-		    return;
-		} catch (ParseException e) {
-		    System.out.println("?Sikertelen Parse");
 		    return;
 		}
 		
 		Vonatszam vsz;
 		try {
-		    Query vszQ = em.createQuery("select vsz from Vonatszam vsz where vsz.szam = :szam");
+		    Query vszQ = em.createQuery("select vsz from Vonatszam vsz where vsz.szam = : szam");
 		    vszQ.setParameter("szam", vszID);
 		    vsz = (Vonatszam) vszQ.getSingleResult();
 		} catch (NoResultException e) {
@@ -255,7 +258,6 @@ public class Program {
 		    System.out.println("?");
 		    return;
 		} catch (NoResultException e) {
-		    //jók vagyunk, mehetünk tovább
 		    ujEntity(new Vonat(ParsedDate, kesesInt, moz, vsz));
 		    em.getTransaction().begin();
 		    moz.setFutottkm(moz.getFutottkm() + vsz.getUthossz().intValue());
@@ -289,8 +291,7 @@ public class Program {
 		// Készítsen lekérdezést, amely visszaadja az összes vonatszámot, majd
 		// irassa ki a listazEntity metódussal az eredményt.
 
-		listazEntity(em
-				.createQuery("select vonatszam from Vonatszam vonatszam")
+		listazEntity(em.createQuery("select vonatszam from Vonatszam vonatszam")
 				.getResultList());
 	}
 
